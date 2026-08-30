@@ -14,28 +14,25 @@ with open("extraccion.txt", "w", encoding="utf-8") as archivo:
 
         texto = pagina.get_text()
 
-        if not encontrado_esquema:
+        
 
-            if re.search(r"Esquema de Contenidos", texto, re.IGNORECASE):
-                encontrado_esquema = True
+        if re.search(r"Esquema de Contenidos", texto, re.IGNORECASE):
+               
+         lineas = texto.splitlines()
 
-        if encontrado_esquema:
+         for linea in lineas:
 
-            lineas = texto.splitlines()
+            linea = linea.strip()
 
-            for linea in lineas:
-
-                linea = linea.strip()
-
-                if not linea:
+            if not linea:
                     continue
 
-                resultado = re.match(
+            resultado = re.match(
                     r"^(\d+(?:\.\d+)*)\.?(?:\s+(.*))?$",
                     linea
                 )
 
-                if resultado:
+            if resultado:
 
                     numero = resultado.group(1)
                     titulo = resultado.group(2)
@@ -46,7 +43,8 @@ with open("extraccion.txt", "w", encoding="utf-8") as archivo:
                     else:
                         numeracion_pendiente = numero
 
-                elif numeracion_pendiente:
+            elif numeracion_pendiente:
 
                     archivo.write(f"{numeracion_pendiente} {linea}\n")
                     numeracion_pendiente = None
+         break
