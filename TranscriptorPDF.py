@@ -1,18 +1,20 @@
 import pymupdf
 import re
+import pathlib
 
 
+def crear_archivo_extraccion(ruta_pdf,):
+  documento = pymupdf.open(ruta_pdf)
 
-documento = pymupdf.open(r"C:\Users\sergio\Desktop\programacioncurso\1er año\arquitectura del computador\Unidad Didáctica 5 EST DEL COMPUTADOR.pdf")
+  materia = ""
+  unidad = ""
 
-materia = ""
-unidad = ""
+  leyendo_materia = False
+  leyendo_unidad = False
+  termino_encabezado = False
+  numeracion_pendiente = None
 
-leyendo_materia = False
-leyendo_unidad = False
-termino_encabezado = False
-
-for pagina in documento:
+  for pagina in documento:
     texto = pagina.get_text()
 
     for linea in texto.splitlines():
@@ -56,7 +58,7 @@ for pagina in documento:
     if termino_encabezado:
         break
 
-with open("extraccion.txt", "w", encoding="utf-8") as archivo:
+  with open("extraccion.txt", "w", encoding="utf-8") as archivo:
     archivo.write(f"{materia.strip()}\n")
     archivo.write(f"{unidad.strip()}\n\n")
 
@@ -68,6 +70,8 @@ with open("extraccion.txt", "w", encoding="utf-8") as archivo:
 
             lineas = texto.splitlines()
 
+            ignorando_unidad = False
+
             for linea in lineas:
                 linea = linea.strip()
 
@@ -75,8 +79,14 @@ with open("extraccion.txt", "w", encoding="utf-8") as archivo:
                     continue
 
                 if re.match(r"^\s*Unidad(?:\s+Didáctica)?\s*\d+",linea,re.IGNORECASE):
+                    ignorando_unidad = True
                     continue
 
+                if ignorando_unidad and not re.match(r"^\d+(?:\.\d+)*\.?(?:\s+.*)?$",linea):
+                    continue    
+                ignorando_unidad = False
+
+                
                 if re.search(r"^\s*\d*\.?\s*Esquema de Contenidos",linea,re.IGNORECASE):
                     continue
 
@@ -96,3 +106,11 @@ with open("extraccion.txt", "w", encoding="utf-8") as archivo:
                     numeracion_pendiente = None
 
             break
+  documento.close()
+
+
+
+carpeta=pathlib.Path(r"C:\Users\sergio\Desktop\Material programacion")
+
+for archivo_pdf in carpeta.rglob("*.pdf"):
+    crear_archivo_extraccion(archivo_pdf)
