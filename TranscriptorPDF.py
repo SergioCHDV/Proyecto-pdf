@@ -58,11 +58,13 @@ def crear_archivo_extraccion(ruta_pdf,):
     if termino_encabezado:
         break
 
-  with open("extraccion.txt", "w", encoding="utf-8") as archivo:
+  nombre_txt = ruta_pdf.with_suffix(".txt")
+
+  with open(nombre_txt, "w", encoding="utf-8") as archivo:
     archivo.write(f"{materia.strip()}\n")
     archivo.write(f"{unidad.strip()}\n\n")
 
-    # Buscar el esquema
+    
     for pagina in documento:
         texto = pagina.get_text()
 
@@ -107,10 +109,20 @@ def crear_archivo_extraccion(ruta_pdf,):
 
             break
   documento.close()
+def mover_archivostxt(carpeta_origen, carpeta_destino):
+    carpeta_origen = pathlib.Path(carpeta_origen)
+    carpeta_destino = pathlib.Path(carpeta_destino)
 
+    carpeta_destino.mkdir(parents=True, exist_ok=True)
+
+    for archivo_txt in carpeta_origen.rglob("*.txt"):
+        ruta_destino = carpeta_destino / archivo_txt.name
+        archivo_txt.rename(ruta_destino)
 
 
 carpeta=pathlib.Path(r"C:\Users\sergio\Desktop\Material programacion")
 
 for archivo_pdf in carpeta.rglob("*.pdf"):
     crear_archivo_extraccion(archivo_pdf)
+
+mover_archivostxt(carpeta, pathlib.Path(r"C:\Users\sergio\Desktop\Material programacion\extracciones"))
