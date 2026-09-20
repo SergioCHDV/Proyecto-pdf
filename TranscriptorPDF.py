@@ -1,9 +1,9 @@
 import pymupdf
 import re
 import pathlib
+import tkinter as tk 
 
-
-def crear_archivo_extraccion(ruta_pdf,):
+def crear_archivo_extraccion(ruta_pdf): 
   documento = pymupdf.open(ruta_pdf)
 
   materia = ""
@@ -109,6 +109,7 @@ def crear_archivo_extraccion(ruta_pdf,):
 
             break
   documento.close()
+  return nombre_txt
 def mover_archivostxt(carpeta_origen, carpeta_destino):
     carpeta_origen = pathlib.Path(carpeta_origen)
     carpeta_destino = pathlib.Path(carpeta_destino)
@@ -118,11 +119,47 @@ def mover_archivostxt(carpeta_origen, carpeta_destino):
     for archivo_txt in carpeta_origen.rglob("*.txt"):
         ruta_destino = carpeta_destino / archivo_txt.name
         archivo_txt.rename(ruta_destino)
+def procesar_pdf():
+
+    nombre = entrada.get().strip()
+
+    if not nombre:
+        mensaje.config(text="Escribí el nombre de un archivo PDF.")
+        return
+
+    ruta_pdf = pathlib.Path(nombre)
+
+    if not ruta_pdf.exists():
+        mensaje.config(text="No se encontró el archivo.")
+        return
+
+    if ruta_pdf.suffix.lower() != ".pdf":
+        mensaje.config(text="El archivo debe ser un PDF.")
+        return
+
+    ruta_txt = crear_archivo_extraccion(ruta_pdf)
+
+    mensaje.config(text=f"TXT creado: {ruta_txt}")
 
 
-carpeta=pathlib.Path(r"C:\Users\sergio\Desktop\Material programacion")
 
-for archivo_pdf in carpeta.rglob("*.pdf"):
-    crear_archivo_extraccion(archivo_pdf)
+ventana = tk.Tk()
 
-mover_archivostxt(carpeta, pathlib.Path(r"C:\Users\sergio\Desktop\Material programacion\extracciones"))
+ventana.title("Transcriptor de PDFs")
+ventana.geometry("500x200")
+
+etiqueta = tk.Label(ventana,text="Ingrese el nombre o ruta del archivo PDF:")
+
+etiqueta.pack()
+
+entrada = tk.Entry(ventana, width=60)
+entrada.pack()
+
+boton = tk.Button(ventana,text="Generar TXT",command=procesar_pdf)
+
+boton.pack()
+
+mensaje = tk.Label(ventana, text="")
+mensaje.pack()
+
+ventana.mainloop()
