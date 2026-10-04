@@ -110,15 +110,8 @@ def crear_archivo_extraccion(ruta_pdf):
             break
   documento.close()
   return nombre_txt
-def mover_archivostxt(carpeta_origen, carpeta_destino):
-    carpeta_origen = pathlib.Path(carpeta_origen)
-    carpeta_destino = pathlib.Path(carpeta_destino)
 
-    carpeta_destino.mkdir(parents=True, exist_ok=True)
 
-    for archivo_txt in carpeta_origen.rglob("*.txt"):
-        ruta_destino = carpeta_destino / archivo_txt.name
-        archivo_txt.rename(ruta_destino)
 def procesar_pdf():
 
     nombre = entrada.get().strip()
@@ -148,7 +141,7 @@ ventana = tk.Tk()
 ventana.title("Transcriptor de PDFs")
 ventana.geometry("500x200")
 
-etiqueta = tk.Label(ventana,text="Ingrese el nombre o ruta del archivo PDF:")
+etiqueta = tk.Label(ventana,text="Ingrese el nombre o la ruta del archivo PDF:")
 
 etiqueta.pack()
 
